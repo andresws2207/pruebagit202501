@@ -1,15 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Login - Estilo Persona 5 Royal</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Hola ESAN</h1>
-    <button>Enviar</button>
-</body>
-<footer> 
+    <main class="login-container">
+        <div class="brand">
+            <h1>Iniciar sesión</h1>
+            <p>Interfaz chevere</p>
+        </div>
 
-</footer>
+        <form id="loginForm" novalidate>
+            <div class="field">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="nombre@empresa.com" required>
+                <small id="emailError" class="field-error" aria-live="polite"></small>
+            </div>
+
+            <div class="field">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required minlength="6">
+                <small id="passwordError" class="field-error" aria-live="polite"></small>
+            </div>
+
+            <p id="message" class="message" aria-live="polite"></p>
+            <button type="submit">Entrar</button>
+        </form>
+
+        <p class="hint">Usa un correo válido y una contraseña de al menos 6 caracteres.</p>
+    </main>
+
+    <script>
+        const form = document.getElementById("loginForm");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const emailError = document.getElementById("emailError");
+        const passwordError = document.getElementById("passwordError");
+        const message = document.getElementById("message");
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = `message ${type}`;
+        }
+
+        function setFieldState(input, errorElement, errorText) {
+            if (errorText) {
+                input.classList.add("invalid");
+                input.classList.remove("valid");
+                errorElement.textContent = errorText;
+                return false;
+            }
+
+            input.classList.remove("invalid");
+            input.classList.add("valid");
+            errorElement.textContent = "";
+            return true;
+        }
+
+        function validateEmail() {
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                return setFieldState(emailInput, emailError, "El email es obligatorio.");
+            }
+
+            if (!emailRegex.test(email)) {
+                return setFieldState(emailInput, emailError, "Ingresa un email válido.");
+            }
+
+            return setFieldState(emailInput, emailError, "");
+        }
+
+        function validatePassword() {
+            const password = passwordInput.value;
+
+            if (!password) {
+                return setFieldState(passwordInput, passwordError, "La contraseña es obligatoria.");
+            }
+
+            if (password.length < 6) {
+                return setFieldState(passwordInput, passwordError, "Debe tener al menos 6 caracteres.");
+            }
+
+            return setFieldState(passwordInput, passwordError, "");
+        }
+
+        emailInput.addEventListener("input", validateEmail);
+        emailInput.addEventListener("blur", validateEmail);
+        passwordInput.addEventListener("input", validatePassword);
+        passwordInput.addEventListener("blur", validatePassword);
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const emailOk = validateEmail();
+            const passwordOk = validatePassword();
+
+            if (!emailOk || !passwordOk) {
+                showMessage("Revisa los campos marcados en rojo.", "error");
+                if (!emailOk) {
+                    emailInput.focus();
+                } else {
+                    passwordInput.focus();
+                }
+                return;
+            }
+
+            showMessage("Inicio de sesión validado correctamente.", "success");
+            form.reset();
+            emailInput.classList.remove("valid", "invalid");
+            passwordInput.classList.remove("valid", "invalid");
+            emailError.textContent = "";
+            passwordError.textContent = "";
+            emailInput.focus();
+        });
+    </script>
+</body>
 </html>
